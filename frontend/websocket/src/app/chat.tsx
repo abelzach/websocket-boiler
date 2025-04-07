@@ -3,8 +3,9 @@ import React, { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
 const Chat: React.FC = () => {
-  const [msg, setMsg] = useState<string>("");
-  const [socket, setSocket] = useState<Socket | null>(null);
+    const [msg, setMsg] = useState<string>("");
+    const [msgs, setMsgs] = useState<any>([]);
+    const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
     // Establish WebSocket connection
@@ -21,12 +22,20 @@ const Chat: React.FC = () => {
     e.preventDefault();
     if (socket) {
         socket.emit("chat-msg", msg);
+        setMsgs([...msgs, msg]);
         setMsg("");
     }
   };
 
   return (
     <div>
+        <div className="flex flex-col items-center justify-start py-2 text-xl">
+            {msgs.map((message: string , index: React.Key) => (
+                <div key={index} className="text-white dark:text-white">
+                    {message}
+                </div>
+            ))}
+        </div>
       <form onSubmit={sendMsg}>
         <input
           type="text"

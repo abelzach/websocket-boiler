@@ -26,32 +26,53 @@ const Chat: React.FC = () => {
         setMsg("");
     }
   };
-
+useEffect(() => {
+    if (socket) {
+        socket.on("chat-msg", (message: string) => {
+            setMsgs((prevMsgs: string[]) => [...prevMsgs, message]);
+        });
+    }
+    return () => {
+        if (socket) {
+            socket.off("chat-msg");
+        }
+    };
+}, [socket]);
   return (
-    <div>
-        <div className="flex flex-col items-center justify-start py-2 text-xl">
-            {msgs.map((message: string , index: React.Key) => (
-                <div key={index} className="text-white dark:text-white">
+    <div className="flex flex-col h-screen bg-gray-100 dark:bg-gray-900 w-2/3">
+        <div className="flex-grow overflow-y-auto p-4 space-y-2">
+            {msgs.map((message: string, index: React.Key) => (
+                <div
+                    key={index}
+                    className={`p-3 rounded-lg text-white ${
+                        (index as number) % 2 === 0
+                            ? "bg-blue-500 self-start"
+                            : "bg-gray-700 self-end"
+                    } max-w-xs break-words`}
+                >
                     {message}
                 </div>
             ))}
         </div>
-      <form onSubmit={sendMsg}>
-        <input
-          type="text"
-          value={msg}
-          required
-          onChange={(e) => setMsg(e.target.value)}
-          placeholder="Type your message"
-          className=" mb-2 p-4 text-2xl font-medium text-white dark:text-white"
-        />
-        <button
-          type="submit"
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-6 py-3 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+        <form
+            onSubmit={sendMsg}
+            className="flex items-center p-4 bg-gray-200 dark:bg-gray-800"
         >
-          Send
-        </button>
-      </form>
+            <input
+                type="text"
+                value={msg}
+                required
+                onChange={(e) => setMsg(e.target.value)}
+                placeholder="Type your message..."
+                className="flex-grow p-3 rounded-lg text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+                type="submit"
+                className="ml-4 px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+                Send
+            </button>
+        </form>
     </div>
   );
 };

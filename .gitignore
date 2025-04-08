@@ -3,3 +3,4 @@ auth-backend/.env
 backend/.env
 backend/node_modules
 auth-backend/node_modules
+node_modules

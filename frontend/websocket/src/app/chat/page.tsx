@@ -9,7 +9,11 @@ const Chat: React.FC = () => {
 
   useEffect(() => {
     // Establish WebSocket connection
-    const newSocket: Socket = io("http://localhost:3000");
+    const newSocket: Socket = io("http://localhost:3000", {
+      query: {
+        username: "zach",
+      },
+    });
     setSocket(newSocket);
 
     newSocket.on("chat-msg", (message: string) => {
@@ -28,8 +32,14 @@ const Chat: React.FC = () => {
 
   const sendMsg = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const msgToBeSent = {
+      text: msg,
+      sender: "zach",
+      receiver: "kid",
+    };
+
     if (socket) {
-      socket.emit("chat-msg", msg);
+      socket.emit("chat-msg", msgToBeSent);
       setMsgs([...msgs, { text: msg, right: true }]);
       setMsg("");
     }

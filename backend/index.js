@@ -1,7 +1,7 @@
-import express from 'express';
-import http from 'http';
-import { Server } from 'socket.io';
-import dotenv from 'dotenv';
+import express from "express";
+import http from "http";
+import { Server } from "socket.io";
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -10,31 +10,47 @@ const port = process.env.PORT || 3000;
 
 const server = http.createServer(app);
 const io = new Server(server, {
- cors: {
-   origin: '*',
-   methods: ['GET', 'POST'],
-   allowedHeaders: ["*"]
- },
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["*"],
+  },
 });
 
-io.on('connection', (socket) => {
-    console.log('Client connected');
-    socket.on('chat-msg', (msg) => {
-        console.log('Received msg ' + msg);
-        socket.broadcast.emit('chat-msg', msg);
-        // Emit the message to connected client
-        // io.emit('chat msg', msg);
-   });
+// Define a map to store username-to-socket mappings
+const userSocketMap = {};
 
+io.on("connection", (socket) => {
+  console.log("Client connected");
+  const username = socket.handshake.query.username;
+  console.log("Username:", username);
+
+  // Store the socket in the map
+  if (username) {
+    userSocketMap[username] = socket;
+  }
+
+  socket.on("chat-msg", (msg) => {
+    console.log(msg.sender);
+    console.log(msg.receiver);
+    console.log(msg.text);
+  });
+
+  // Handle socket disconnection
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+    if (username) {
+      delete userSocketMap[username];
+    }
+  });
 });
 
 // Define a route
-app.get('/', (req, res) => {
- res.send('Websocket!');
+app.get("/", (req, res) => {
+  res.send("Websocket!");
 });
-
 
 // Start the server
 server.listen(port, () => {
- console.log(`Server is listening at http://localhost:${port}`);
+  console.log(`Server is listening at http://localhost:${port}`);
 });

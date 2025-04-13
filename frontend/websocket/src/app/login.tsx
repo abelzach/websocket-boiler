@@ -2,7 +2,7 @@
 import axios from "axios";
 import { useState } from "react";
 import React from "react";
-import { useRouter } from 'next/navigation'
+import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
   const router = useRouter();
@@ -13,16 +13,43 @@ const LoginPage = () => {
     console.log("signUpFunc called");
     event.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/auth/signup", {
-        username: username,
-        password: password,
-      });
+      const res = await axios.post(
+        "http://localhost:5000/auth/signup",
+        {
+          username: username,
+          password: password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
       if (res.data.message === "Username already exists") {
         alert("Username already exists");
         chatPage(event);
       } else {
         chatPage(event);
       }
+    } catch (error) {
+      console.log("Error in signup function : ", (error as any)?.message);
+    }
+  };
+
+  const loginFunc = async (event: any) => {
+    console.log("LoginFunc called");
+    event.preventDefault();
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/auth/login",
+        {
+          username: username,
+          password: password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(res);
+      chatPage(event);
     } catch (error) {
       console.log("Error in signup function : ", (error as any)?.message);
     }
@@ -47,7 +74,7 @@ const LoginPage = () => {
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form className="space-y-6" onClick={signUpFunc}>
+        <form className="space-y-6">
           <div>
             <label
               htmlFor="username"
@@ -97,12 +124,20 @@ const LoginPage = () => {
             </div>
           </div>
 
-          <div>
+          <div className="flex items-center justify-between gap-x-1">
             <button
               type="submit"
+              onClick={signUpFunc}
               className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
               Sign in
+            </button>
+            <button
+              type="submit"
+              onClick={loginFunc}
+              className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            >
+              Login
             </button>
           </div>
         </form>

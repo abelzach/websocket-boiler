@@ -26,14 +26,14 @@ io.on("connection", (socket) => {
   console.log("Username:", username);
 
   // Store the socket in the map
-  if (username) {
-    userSocketMap[username] = socket;
-  }
+  userSocketMap[username] = socket;
 
   socket.on("chat-msg", (msg) => {
-    console.log(msg.sender);
-    console.log(msg.receiver);
-    console.log(msg.text);
+    console.log("message:", msg);
+    const receiverSocket = userSocketMap[msg.receiver];
+    if (receiverSocket) {
+      receiverSocket.emit("chat-msg", msg);
+    }
   });
 
   // Handle socket disconnection

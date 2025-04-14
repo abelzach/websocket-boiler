@@ -3,11 +3,13 @@ import axios from "axios";
 import { useState } from "react";
 import React from "react";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from './zustand/useAuthStore';
 
 const LoginPage = () => {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const {updateAuthName} = useAuthStore();
 
   const signUpFunc = async (event: any) => {
     console.log("signUpFunc called");
@@ -25,8 +27,10 @@ const LoginPage = () => {
       );
       if (res.data.message === "Username already exists") {
         alert("Username already exists");
+        updateAuthName(username);
         chatPage(event);
       } else {
+        updateAuthName(username);
         chatPage(event);
       }
     } catch (error) {
@@ -49,6 +53,7 @@ const LoginPage = () => {
         }
       );
       console.log(res);
+      updateAuthName(username);
       chatPage(event);
     } catch (error) {
       console.log("Error in signup function : ", (error as any)?.message);

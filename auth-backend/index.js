@@ -9,7 +9,7 @@ import usersRouter from "./routes/users.route.js";
 dotenv.config();
 
 const app = express();
-// Enable CORS for all origins
+// Enable CORS for all origins for testing
 
 app.use(
   cors({
